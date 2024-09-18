@@ -50,8 +50,8 @@ namespace ProcessamentoArquivosBaseMensal
                             string nomeArquivo = arquivo.Name;                  // Nome do arquivo
                             string enderecoCompleto = arquivo.FullName;          // Caminho completo do arquivo
                             long tamanhoArquivo = arquivo.Length;               // Tamanho do arquivo (em bytes)
-                            DateTime dataDisponibilizacao = arquivo.CreationTime; // Data e hora da disponibilização
-
+                            DateTime dataDisponibilizacao = arquivo.CreationTimeUtc; // Data e hora da disponibilização
+                            dataDisponibilizacao = Convert.ToDateTime(dataDisponibilizacao);
 
                             // Verifica se o arquivo já existe no banco de dados
                             string vSQLnomearq = $"SELECT no_arquivo FROM prTb001_Arquivo WHERE no_arquivo='{arquivo.Name}'";
@@ -87,12 +87,12 @@ namespace ProcessamentoArquivosBaseMensal
                                 WITH (CODEPAGE = '65001', FIRSTROW = 2, FIELDTERMINATOR = ';', ROWTERMINATOR = '0x0a')";
                                     SqlCommand bulkInsertCmd = new SqlCommand(bulkInsertQuery, conn);
                                     bulkInsertCmd.ExecuteNonQuery();
+                                    string dataDisponibilizacaoConvertida = dataDisponibilizacao.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                                  
 
 
-
-
-
-                                    string vSQL02 = $"INSERT INTO [dbo].[prTb001_Arquivo]([no_arquivo],[dh_arquivo],[qt_tamanho],[no_endereco_completo])VALUES('{arquivo.Name}'.'{dataDisponibilizacao}','{dataDisponibilizacao}',{tamanhoArquivo},'{enderecoCompleto}')  ";
+                                    string vSQL02 = $"INSERT INTO [dbo].[prTb001_Arquivo]([no_arquivo],[dh_arquivo],[qt_tamanho],[no_endereco_completo]) VALUES ('{arquivo.Name}+{dataDisponibilizacao} ','{dataDisponibilizacaoConvertida}',{tamanhoArquivo},'{enderecoCompleto}')  ";
                                     SqlCommand cmdSQL02 = new SqlCommand(vSQL02, conn);
                                     cmdSQL02.ExecuteNonQuery();
 
